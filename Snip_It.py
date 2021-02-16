@@ -4,29 +4,42 @@ import numpy as np
 import sys
 import pygame
 from pygame.locals import *
+
+# accessing the image from the file system
 try:
     image = np.array(plt.imread(input("Enter file name with path and extension : ")))
 except:
     print("Path not found!")
     sys.exit()
+
+# storing the image in variable x
 x = image
+
+# converting the image to monochrome for ease in convolution
 shit = [[0 for _ in range(x.shape[1])] for __ in range(x.shape[0])]
 for i in range(x.shape[0]):
     for j in range(x.shape[1]):
         shit[i][j] = x[i][j][0] * 0.3 + x[i][j][1] * 0.59 + x[i][j][2] * 0.11
-vertical = [[1, 0, -1], [2, 0, -2], [1, 0, -1]]
+
+# Performing Convolution to extract the edges from the image and storing it in variable z
 vertizontal = [[1, 1, 1], [1, -8, 1], [1, 1, 1]]
 z = np.array(scipy.ndimage.convolve(shit, vertizontal, mode='reflect'))
+
+# Initializing pygame
 pygame.init()
 x1 = x.shape[1]
 y1 = x.shape[0]
 DISPLAYSURF = pygame.display.set_mode((x1, y1), 0, 32)
-pygame.display.set_caption('Black Board')
+pygame.display.set_caption('Snip It!')
+
+# Displaying the image
 for i in range(x1):
     for j in range(y1):
         DISPLAYSURF.set_at((i, j), x[j][i])
 flag = 0
 flag2 = 0
+
+# Tracking the mouse pointer and selecting the edges in it's vicinity(When program is in the selection mode)
 while True:
     mx, my = pygame.mouse.get_pos()
     for event in pygame.event.get():
@@ -52,7 +65,8 @@ while True:
         DISPLAYSURF.set_at((j1, my), (255, 0, 0))
         x[my][j1] = [255, 0, 0]
     pygame.display.update()
-        
+
+# Selecting the image and displaying it
 x117 = [[[0, 0, 0] for _ in range(x1)] for __ in range(y1)]
 flag3 = 0
 for i in range(y1):
