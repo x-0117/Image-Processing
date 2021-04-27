@@ -1,45 +1,45 @@
-import matplotlib.pyplot as plt
-import scipy.ndimage
-import numpy as np
+# -*- coding: utf-8 -*-
+import scipy.ndimage, numpy as np
 import sys
+from PIL import Image as im
 import pygame
 from pygame.locals import *
 
-# accessing the image from the file system
+
 try:
-    image = np.array(plt.imread(input("Enter file name with path and extension : ")))
+    imageFile = input("Enter file name with path and extension : ")
+    x = np.array(im.open(imageFile))
 except:
     print("Path not found!")
     sys.exit()
+x1 = x.shape[1]
+y1 = x.shape[0]
 
-# storing the image in variable x
-x = image
 
-# converting the image to monochrome for ease in convolution
+x117 = np.array([[[0, 0, 0, 0] for _ in range(x1)] for __ in range(y1)])
+for i in range(y1):
+    for j in range(x1):
+        x117[i][j] = list(x[i][j]) + [0]
+
+
 shit = [[0 for _ in range(x.shape[1])] for __ in range(x.shape[0])]
 for i in range(x.shape[0]):
     for j in range(x.shape[1]):
         shit[i][j] = x[i][j][0] * 0.3 + x[i][j][1] * 0.59 + x[i][j][2] * 0.11
 
-# Performing Convolution to extract the edges from the image and storing it in variable z
+
 vertizontal = [[1, 1, 1], [1, -8, 1], [1, 1, 1]]
 z = np.array(scipy.ndimage.convolve(shit, vertizontal, mode='reflect'))
 
-# Initializing pygame
-pygame.init()
-x1 = x.shape[1]
-y1 = x.shape[0]
-DISPLAYSURF = pygame.display.set_mode((x1, y1), 0, 32)
-pygame.display.set_caption('Snip It!')
 
-# Displaying the image
+pygame.init()
+DISPLAYSURF = pygame.display.set_mode((x1, y1), 0, 32)
+pygame.display.set_caption('Black Board')
 for i in range(x1):
     for j in range(y1):
         DISPLAYSURF.set_at((i, j), x[j][i])
 flag = 0
 flag2 = 0
-
-# Tracking the mouse pointer and selecting the edges in it's vicinity(When program is in the selection mode)
 while True:
     mx, my = pygame.mouse.get_pos()
     for event in pygame.event.get():
@@ -66,8 +66,7 @@ while True:
         x[my][j1] = [255, 0, 0]
     pygame.display.update()
 
-# Selecting the image and displaying it
-x117 = [[[0, 0, 0] for _ in range(x1)] for __ in range(y1)]
+
 flag3 = 0
 for i in range(y1):
     flag3 = -1
@@ -89,11 +88,28 @@ for i in range(y1):
         if l0[-1][-1] == x1 - 1:
             for k in l1:
                 if list(x[k[0]][k[1]]) != [255, 0, 0]:
-                    x117[k[0]][k[1]] = x[k[0]][k[1]]
+                    x117[k[0]][k[1]][3] = 255
         else:
             for k in l0:
                 if list(x[k[0]][k[1]]) != [255, 0, 0]:
-                    x117[k[0]][k[1]] = x[k[0]][k[1]]
+                    x117[k[0]][k[1]][3] = 255
     except:
         pass
-plt.imshow(x117)
+for i in range(y1):
+    for j in range(x1):
+        if x117[i][j][3] == 0:
+            try:
+                if 255 in x117[i - 3:i, j, 3] and 255 in x117[i + 1:i + 4, j, 3]:
+                    x117[i][j][3] = 255
+            except:
+                pass
+
+
+src = im.new('RGBA', (x1, y1))
+image_save = np.array(src)
+for i in range(y1):
+    for j in range(x1):
+        image_save[i][j] = x117[i][j]
+
+
+im.fromarray(image_save).save(imageFile.split('.')[0] + "_cropped.png")
