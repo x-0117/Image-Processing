@@ -40,7 +40,7 @@ It is a GUI based application which resembles the magnetic lasso tool of photosh
 # EDITOR
 It's a CLI tool to help the user produce different versions of the same image. The tool can be used to generate _Black and white_, _Sepia_, _Threshold_(Purely black and white), _Negative_ and much more...
 
-![Black and White](/Images/Black_and_white.png) ![Sepia](/Images/Sepia.png) ![Negative](/Images/negative.png) ![Threshold](/Images/threshold.png)
+![Black and White](/Images/Black_and_white.png) ![Sepia](/Images/Sepia.png) ![Negative](/Images/Negative.png) ![Threshold](/Images/threshold.png)
 
 ## LIBRARIES REQUIRED :
 1. Numpy(`pip install numpy`)
